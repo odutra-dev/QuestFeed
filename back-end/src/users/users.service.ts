@@ -34,10 +34,26 @@ export class UsersService {
     }
   }
 
-  async findAll() {
-    return this.userRepository.find({
+  async findAll(page: number = 1, limit: number = 10) {
+    const skip = (page - 1) * limit;
 
-    })
+    const [data, total] = await this.userRepository.findAndCount({
+      skip,
+      take: limit,
+      order: {
+        created_at: 'DESC'
+      },
+    });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        lastPage: Math.ceil(total / limit),
+        limit,
+      },
+    };
   }
 
   findOne(id: number) {

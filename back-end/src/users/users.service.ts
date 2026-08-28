@@ -13,47 +13,31 @@ export class UsersService {
     private userRepository: Repository<User>
   ) { }
 
-  async verifyByEmail(email: string) {
-    return await this.userRepository.findOne({
-      where: {
-        email: email
-      }
-    })
-  }
-
-  async verifyByUserName(username: string) {
-    return await this.userRepository.findOne({
-      where: {
-        username: username
-      }
-    })
-  }
-
 
   async create(createUserDto: CreateUserDto) {
-
-    const existsEmail = await this.verifyByEmail(createUserDto.email);
-    const existsUserName = await this.verifyByUserName(createUserDto.username);
-
-    if (existsEmail) {
-      throw new ConflictException('Email already exists.');
-    }
-
-    if (existsUserName) {
-      throw new ConflictException('Username already exists.');
-    }
-
     try {
       const newUser = this.userRepository.create(createUserDto);
-
       return await this.userRepository.save(newUser);
-    } catch (error) {
+    } catch (error: any) {
+
+      if (error.code === '23505') {
+        if (error.detail?.includes('email')) {
+          throw new ConflictException('Email already exists.');
+        }
+        if (error.detail?.includes('username')) {
+          throw new ConflictException('Username already exists.');
+        }
+        throw new ConflictException('Data conflict detected.');
+      }
+
       throw new InternalServerErrorException('Error creating user.');
     }
   }
 
   async findAll() {
-    return this.userRepository.find()
+    return this.userRepository.find({
+
+    })
   }
 
   findOne(id: number) {

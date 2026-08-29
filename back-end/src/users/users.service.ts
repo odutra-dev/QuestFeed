@@ -56,19 +56,25 @@ export class UsersService {
     };
   }
 
-  findOne(id: string) {
-    return this.userRepository.findOne({
+  async findOne(id: string) {
+    return await this.userRepository.findOne({
       where: {
         id
       }
     })
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+
+    try {
+      return await this.userRepository.update(id, updateUserDto);
+    } catch (error) {
+      console.log(error)
+    }
+
   }
 
-  remove(id: number) {
+  remove(id: string) {
     return `This action removes a #${id} user`;
   }
 }

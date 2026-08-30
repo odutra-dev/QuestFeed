@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { Repository } from 'typeorm';
@@ -67,7 +67,7 @@ export class UsersService {
     catch (error: any) {
 
       if (error.code == '22P02') {
-        throw new BadRequestException('Id Not exists.')
+        throw new NotFoundException('Id Not Found.');
       }
     }
   }
@@ -80,7 +80,7 @@ export class UsersService {
       console.log(error)
 
       if (error.code == '22P02') {
-        throw new BadRequestException('Id Not exists.')
+        throw new NotFoundException('Id Not Found.');
       }
     }
 

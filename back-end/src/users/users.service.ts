@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, BadRequestException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { Repository } from 'typeorm';
@@ -57,19 +57,31 @@ export class UsersService {
   }
 
   async findOne(id: string) {
-    return await this.userRepository.findOne({
-      where: {
-        id
+    try {
+      return await this.userRepository.findOne({
+        where: {
+          id
+        }
+      })
+    }
+    catch (error: any) {
+
+      if (error.code == '22P02') {
+        throw new BadRequestException('Id Not exists.')
       }
-    })
+    }
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
 
     try {
       return await this.userRepository.update(id, updateUserDto);
-    } catch (error) {
+    } catch (error: any) {
       console.log(error)
+
+      if (error.code == '22P02') {
+        throw new BadRequestException('Id Not exists.')
+      }
     }
 
   }

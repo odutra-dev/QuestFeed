@@ -17,6 +17,17 @@ async function bootstrap() {
     .setTitle('QuestFeed')
     .setDescription('Quest Feed is API for Social Games')
     .setVersion('1.0')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Entre com o token JWT',
+        in: 'header',
+      },
+      'access-token', // Nome do security scheme
+    )
     .build();
 
   const documentFactory = () => SwaggerModule.createDocument(app, config);

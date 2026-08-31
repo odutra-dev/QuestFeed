@@ -5,11 +5,12 @@ import { AppService } from './app.service.js';
 import { UsersModule } from './users/users.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity.js';
+import { AuthModule } from './auth/auth.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Disponibiliza as variáveis do .env para toda a aplicação
+      isGlobal: true,
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -27,6 +28,7 @@ import { User } from './users/entities/user.entity.js';
       }),
     }),
     UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

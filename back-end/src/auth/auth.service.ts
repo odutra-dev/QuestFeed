@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { CreateAuthDto } from './dto/create-auth.dto.js';
 import { Payload } from '../common/types/payload/index.js';
+import { CreateUserDto } from '../users/dto/create-user.dto.js';
 
 @Injectable()
 export class AuthService {
@@ -11,6 +12,30 @@ export class AuthService {
     private usersService: UsersService,
     private jwtService: JwtService
   ) { }
+
+  private async generateToken(user: any) {
+    const payload = {
+      sub: user.id,
+      email: user.email,
+    };
+
+    return {
+      expired: false,
+      access_token: await this.jwtService.signAsync(payload),
+      token_type: "bearer",
+      expires_in: 3599
+    };
+  }
+
+  async signUp(createUserDto: CreateUserDto) {
+    const user = await this.usersService.create(createUserDto);
+    const fullUser = await this.usersService.findByEmail(createUserDto.email);
+
+    return {
+      user,
+      ...(await this.generateToken(fullUser)), // Retorna os dados do token
+    };
+  }
 
   async signIn(createAuthDto: CreateAuthDto) {
     const user = await this.usersService.findByEmail(createAuthDto.email);
@@ -23,16 +48,6 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const payload: Payload = new Payload();
-
-    payload.sub = user.id;
-    payload.email = user.email;
-
-    return {
-      expired: false,
-      access_token: await this.jwtService.signAsync(payload),
-      token_type: "bearer",
-      expires_in: 3599
-    };
+    return this.generateToken(user);
   }
 }

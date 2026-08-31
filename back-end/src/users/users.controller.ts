@@ -9,11 +9,6 @@ import { ApiBearerAuth } from '@nestjs/swagger';
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
-  @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
-  }
-
   @Get()
   findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
     return this.usersService.findAll();

@@ -6,12 +6,16 @@ import { UsersModule } from './users/users.module.js';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './users/entities/user.entity.js';
 import { AuthModule } from './auth/auth.module.js';
+import { PubSubModule } from './providers/pubsub/pubsub.module.js';
+import { MailModule } from './mail/mail.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
     }),
+    PubSubModule,
+    MailModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
